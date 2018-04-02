@@ -23,7 +23,11 @@ public class Critter1 extends Critter {
 
 	@Override
 	public void doTimeStep() {
-		run(getRandomInt(8));
+		int dir = getRandomInt(8);
+		String str = look(dir, true); // look() called from doTimeStep()
+		if (str == null) {
+			run(dir);
+		}
 	}
 
 	@Override

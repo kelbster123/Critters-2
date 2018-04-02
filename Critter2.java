@@ -36,8 +36,11 @@ public class Critter2 extends Critter{
 
 	@Override
 	public boolean fight(String opponent) {
-		walk(getRandomInt(8));
-		walk(getRandomInt(8));
+		int dir = getRandomInt(8);
+		String str = look(dir, true); // look() called from fight()
+		if (str == null) {
+			walk(dir);
+		}
 		return false;
 	}
 
