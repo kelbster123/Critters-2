@@ -1,4 +1,4 @@
-package assignment4;
+package assignment5;
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by
  * Varun Prabhu
@@ -19,6 +19,35 @@ import java.util.List;
  */
 
 public abstract class Critter {
+	/* NEW FOR PROJECT 5 */
+	public enum CritterShape {
+		CIRCLE,
+		SQUARE,
+		TRIANGLE,
+		DIAMOND,
+		STAR
+	}
+	
+	/* the default color is white, which I hope makes critters invisible by default
+	 * If you change the background color of your View component, then update the default
+	 * color to be the same as you background 
+	 * 
+	 * critters must override at least one of the following three methods, it is not 
+	 * proper for critters to remain invisible in the view
+	 * 
+	 * If a critter only overrides the outline color, then it will look like a non-filled 
+	 * shape, at least, that's the intent. You can edit these default methods however you 
+	 * need to, but please preserve that intent as you implement them. 
+	 */
+	public javafx.scene.paint.Color viewColor() { 
+		return javafx.scene.paint.Color.WHITE; 
+	}
+	
+	public javafx.scene.paint.Color viewOutlineColor() { return viewColor(); }
+	public javafx.scene.paint.Color viewFillColor() { return viewColor(); }
+	
+	public abstract CritterShape viewShape(); 
+	
 	private static String myPackage;
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
@@ -27,6 +56,49 @@ public abstract class Critter {
 	static {
 		myPackage = Critter.class.getPackage().toString().split(" ")[1];
 	}
+	
+	private	static List<Critter> lookPopulation = new java.util.ArrayList<Critter>(); // population that look() uses
+	
+	/**
+	 * This method looks for another Critter in the spot that is the
+	 * given number of steps away from this Critter in the given direction
+	 * @param direction is the direction to look in
+	 * @param steps is false to look 1 step and true to look 2 steps
+	 * @return null if no Critter in location, otherwise String representation of looked at Critter
+	 */
+	protected final String look(int direction, boolean steps) {
+		energy -= Params.look_energy_cost;
+		
+		int xValue = x_coord;
+		int yValue = y_coord;
+		
+		int numSteps;
+		if (steps) {
+			numSteps = 1;
+		} else {
+			numSteps = 0;
+		}
+
+		for(int count = 0; count < numSteps; count++) {
+			walkHelper(direction);
+		}
+
+		for (Critter c : lookPopulation) { // used to separate look stage and step stage
+			if (!c.equals(this)) {
+				if((c.x_coord == x_coord) && (c.y_coord == y_coord)) {
+					x_coord = xValue;
+					y_coord = yValue;
+					return c.toString();
+				}
+			}
+		}
+		x_coord = xValue;
+		y_coord = yValue;
+		return null;
+	}
+	
+	/* rest is unchanged from Project 4 */
+	
 	
 	private static java.util.Random rand = new java.util.Random();
 	public static int getRandomInt(int max) {
@@ -50,8 +122,10 @@ public abstract class Critter {
 	
 	private int x_coord;
 	private int y_coord;
+	
 	private int moveCount = 0;
 	private static boolean doingEcounters = false;
+	
 	
 	/**
 	 * This method performs a single walk in the given direction.
@@ -261,8 +335,30 @@ public abstract class Critter {
 	 * This method performs one time step for each Critter in the Critter collection.
 	 */
 	public static void worldTimeStep() {
+		lookPopulation = new ArrayList<Critter>();
+		for (Critter c : population) {
+			try {
+				Critter copy = (Critter) c.getClass().newInstance();
+				copy.energy = Params.start_energy;
+				copy.x_coord = c.x_coord;
+				copy.y_coord = c.y_coord;
+				lookPopulation.add(copy);
+			} catch (InstantiationException | IllegalAccessException e) { // incorrect user input will never cause these exceptions
+				System.out.println("Copying Error");
+			}
+		}
+		
 		for (Critter c : population) {
 			c.doTimeStep();
+		}
+		
+		lookPopulation = population;
+		 
+		// remove dead Critters
+		for (int idx = population.size() - 1; idx >= 0; idx--) {
+			if (population.get(idx).energy <= 0) { // if Critter is out of energy, remove it from the collection
+				population.remove(idx);
+			}
 		}
 
 		doingEcounters = true;
@@ -296,15 +392,22 @@ public abstract class Critter {
                         if (cValue >= otherValue) { // if Critter c wins fight or if tie
                             c.energy += (otherCritter.energy)/2;
                             otherCritter.energy = 0;
+                            population.remove(otherCritter);
                             world[c.y_coord][c.x_coord] = c;
                         } else { // other Critter wins
                         	otherCritter.energy += c.energy/2;
                         	c.energy = 0;
+                        	population.remove(c);
                         }
                     } else if (c.energy > 0) { // if other Critter dead but Critter c alive
                     	world[c.y_coord][c.x_coord] = c;
+                    	population.remove(otherCritter);
                     } else if ((c.energy <= 0) && (otherCritter.energy <= 0)) { // if both Critters dead
                     	world[c.y_coord][c.x_coord] = null;
+                    	population.remove(c);
+                    	population.remove(otherCritter);
+                    } else { // if Critter c dead but other Critter alive
+                    	population.remove(c);
                     }
                 }
             }
@@ -312,7 +415,7 @@ public abstract class Critter {
 
         doingEcounters = false;
 
-
+        // remove dead Critters
 		for (int idx = population.size() - 1; idx >= 0; idx--) {
 			population.get(idx).energy -= Params.rest_energy_cost;
 			if (population.get(idx).energy <= 0) { // if Critter is out of energy, remove it from the collection
