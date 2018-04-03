@@ -13,8 +13,16 @@ package assignment5;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
 
@@ -34,26 +42,98 @@ public class Main extends Application {
         Application.launch(args);
     }
 	
-    static Scanner kb;	// scanner connected to keyboard input, or input file
-    private static String inputFile;	// input file, used instead of keyboard input if specified
-    static ByteArrayOutputStream testOutputString;	// if test specified, holds all console output
+    //static Scanner kb;	// scanner connected to keyboard input, or input file
+    //private static String inputFile;	// input file, used instead of keyboard input if specified
+    //static ByteArrayOutputStream testOutputString;	// if test specified, holds all console output
     private static String myPackage;	// package of Critter file.  Critter cannot be in default pkg.
-    private static boolean DEBUG = false; // Use it or not, as you wish!
-    static PrintStream old = System.out;	// if you want to restore output to console
-
+    //private static boolean DEBUG = false; // Use it or not, as you wish!
+    //static PrintStream old = System.out;	// if you want to restore output to console
 
     // Gets the package name.  The usage assumes that Critter and its subclasses are all in the same package.
     static {
         myPackage = Critter.class.getPackage().toString().split(" ")[1];
     }
+    
+    static int numRows = Params.world_height;
+	static int numColumns = Params.world_width;
+	static int size = 5;
+    
     @Override
     public void start(final Stage primaryStage) {
         primaryStage.setTitle("Critters");
-        GridPane grid = new GridPane();
-        Scene scene = new Scene(grid, 400, 400);
+        BorderPane border = new BorderPane();
+        Scene scene = new Scene(border, 400, 400);
         primaryStage.setScene(scene);
-        Critter.displayWorld(grid);
+        
+        GridPane grid = new GridPane();
+        FlowPane control = new FlowPane();
+        border.setTop(control);
+        border.setCenter(grid);
+        
+        Button makeBtn = new Button("Make");
+        control.getChildren().add(makeBtn);
+        
+        MenuButton critterMenu = new MenuButton("Hello");
+        control.getChildren().add(critterMenu);
+        File file = new File("./bin/" + myPackage);
+        String[] critterClasses = file.list();
+        for (String s : critterClasses) {
+        	try {
+				if (Class.forName(myPackage + ".Critter").isAssignableFrom(Class.forName(myPackage + "." + s.substring(0, s.length() - 6)))) {
+					if (!s.equals("Critter.class") && !s.equals("Critter$TestCritter.class")) {
+				        critterMenu.getItems().add(new MenuItem(s.substring(0, s.length() - 6)));
+					}
+					
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        
+        
+        
+        updateView(grid);
         primaryStage.show();
+    }
+    
+    private void updateView(GridPane grid) {
+    	grid.getChildren().clear();
+    	drawGridLines(grid);
+    	
+		List<Critter> world = Critter.displayWorld();
+		for (Critter c : world) {
+			Shape s = getShape(c.viewShape());
+			s.setFill(c.viewFillColor());
+			s.setStroke(c.viewOutlineColor());
+			grid.add(s, c.getX(), c.getY());
+		}
+    }
+    
+    private void drawGridLines(GridPane grid) {
+		for (int row = 0; row < numRows; row++) {
+			for (int col = 0; col < numColumns; col++) {
+				Shape rect = new Rectangle(size, size);
+				rect.setFill(null);
+				rect.setStroke(Color.GRAY);
+				grid.add(rect, row, col);
+			}
+		}
+	}
+    
+    private Shape getShape(Critter.CritterShape shape) {
+    	switch (shape) {
+    		case CIRCLE: return new Circle(size/2.0);
+    		case SQUARE: return new Rectangle(size, size);
+    		default: return new Circle(size/2.0);
+    					 
+    		//add others
+    		/*
+			TRIANGLE,
+			DIAMOND,
+			STAR
+    		*/
+    	}
     }
 
 

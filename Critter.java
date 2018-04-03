@@ -444,11 +444,20 @@ public abstract class Critter {
 		}
 	}
 	
+	public int getX() {
+		return x_coord;
+	}
+	
+	public int getY() {
+		return y_coord;
+	}
+	
 	/**
-	 * This method displays the world on the console.
+	 * This method returns the population ArrayList so that the view can be updated.
 	 */
-	public static void displayWorld(GridPane grid) {
-		drawGridLines(grid);
+	public static List<Critter> displayWorld() {
+		return population;
+		/*
 		String[][] world = new String[Params.world_height][Params.world_width]; // 2D array of chars representing the world
 		for (int row = 0; row < world.length; row++) {
 			for (int col = 0; col < world[row].length; col++) {
@@ -478,22 +487,7 @@ public abstract class Critter {
 			System.out.print("-");
 		}
 		System.out.println("+");
-	}
-
-
-	static int numRows = Params.world_height;
-	static int numColumns = Params.world_width;
-	static int size = 5;
-
-	private static void drawGridLines(GridPane grid) {
-		for (int row = 0; row < numRows; row++) {
-			for (int col = 0; col < numColumns; col++) {
-				Shape rect = new Rectangle(size, size);
-				rect.setFill(null);
-				rect.setStroke(Color.GRAY);
-				grid.add(rect, row, col);
-			}
-		}
+		*/
 	}
 	
 	/**
