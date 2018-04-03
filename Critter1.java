@@ -1,4 +1,4 @@
-package assignment4;
+package assignment5;
 /* CRITTERS Critter1.java
  * EE422C Project 4 submission by
  * Varun Prabhu
@@ -34,6 +34,11 @@ public class Critter1 extends Critter {
 	public boolean fight(String opponent) {
 		numFights++;
 		return true;
+	}
+
+	@Override
+	public CritterShape viewShape() {
+		return null;
 	}
 
 	@Override

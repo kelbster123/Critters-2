@@ -10,6 +10,11 @@ package assignment5;
  * Spring 2018
  */
 
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,15 +54,15 @@ public abstract class Critter {
 	public abstract CritterShape viewShape(); 
 	
 	private static String myPackage;
-	private	static List<Critter> population = new java.util.ArrayList<Critter>();
-	private static List<Critter> babies = new java.util.ArrayList<Critter>();
+	private	static List<Critter> population = new ArrayList<Critter>();
+	private static List<Critter> babies = new ArrayList<Critter>();
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
 		myPackage = Critter.class.getPackage().toString().split(" ")[1];
 	}
 	
-	private	static List<Critter> lookPopulation = new java.util.ArrayList<Critter>(); // population that look() uses
+	private	static List<Critter> lookPopulation = new ArrayList<Critter>(); // population that look() uses
 	
 	/**
 	 * This method looks for another Critter in the spot that is the
@@ -442,7 +447,8 @@ public abstract class Critter {
 	/**
 	 * This method displays the world on the console.
 	 */
-	public static void displayWorld() {
+	public static void displayWorld(GridPane grid) {
+		drawGridLines(grid);
 		String[][] world = new String[Params.world_height][Params.world_width]; // 2D array of chars representing the world
 		for (int row = 0; row < world.length; row++) {
 			for (int col = 0; col < world[row].length; col++) {
@@ -472,6 +478,22 @@ public abstract class Critter {
 			System.out.print("-");
 		}
 		System.out.println("+");
+	}
+
+
+	static int numRows = Params.world_height;
+	static int numColumns = Params.world_width;
+	static int size = 5;
+
+	private static void drawGridLines(GridPane grid) {
+		for (int row = 0; row < numRows; row++) {
+			for (int col = 0; col < numColumns; col++) {
+				Shape rect = new Rectangle(size, size);
+				rect.setFill(null);
+				rect.setStroke(Color.GRAY);
+				grid.add(rect, row, col);
+			}
+		}
 	}
 	
 	/**
@@ -514,4 +536,7 @@ public abstract class Critter {
 			y_coord = Params.world_height - 1;
 		}
 	}
+
+
+
 }
