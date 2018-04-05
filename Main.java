@@ -32,6 +32,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.io.*;
 
 
@@ -93,7 +94,7 @@ public class Main extends Application {
         hb.getChildren().addAll(lb, tf);
         hb.setSpacing(5);
         control.getChildren().add(hb);
-
+        
 
         Button statsButton = new Button("Stats");
         control.getChildren().add(statsButton);
@@ -113,6 +114,23 @@ public class Main extends Application {
 
         Button step1000 = new Button("Step 1000");
         control.getChildren().add(step1000);
+        
+        
+        // animation controls
+        HBox animHB = new HBox();
+        Label animLB = new Label("Steps per Frame");
+        TextField animTF = new TextField();
+        animTF.setMaxWidth(60);
+        animHB.getChildren().addAll(animLB, animTF);
+        animHB.setSpacing(5);
+        control.getChildren().add(animHB);
+        
+        // seed controls
+        Button seedBtn = new Button("Set Seed");
+        TextField seedTF = new TextField();
+        seedTF.setMaxWidth(60);
+        control.getChildren().addAll(seedBtn, seedTF);
+        
 
         Button quit = new Button("quit");
         control.getChildren().add(quit);
@@ -121,7 +139,7 @@ public class Main extends Application {
 
         // .\\out\\production\\assignment5\\
 
-        File file = new File(".\\out\\production\\assignment5\\" + myPackage);
+        File file = new File("./bin/" + myPackage);
         String[] critterClasses = file.list();
         for (String s : critterClasses) {
         	try {
@@ -219,35 +237,155 @@ public class Main extends Application {
         });
 
         step10.setOnAction(event -> {
+        	int animSpeed = 0;
+        	if (animTF.getText() != null) {
+        		try {
+        			animSpeed = Integer.parseInt(animTF.getText());
+        		} catch (Exception e) {
+        			
+        		}
+        	}
+        	
+        	makeBtn.setDisable(true);
+        	critterMenu.setDisable(true);
+        	stats.setDisable(true);
+        	statsButton.setDisable(true);
+        	step1.setDisable(true);
+        	step10.setDisable(true);
+        	step100.setDisable(true);
+        	step1000.setDisable(true);
+        	seedBtn.setDisable(true);
+        	
             for (int i = 0; i < 10; i++) {
                 Critter.worldTimeStep();
+                if((animSpeed != 0) && (i % animSpeed == 0)) {
+                	updateView(grid);
+                	try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						
+					}
+                }
             }
             updateView(grid);
+            
+            makeBtn.setDisable(false);
+        	critterMenu.setDisable(false);
+        	stats.setDisable(false);
+        	statsButton.setDisable(false);
+        	step1.setDisable(false);
+        	step10.setDisable(false);
+        	step100.setDisable(false);
+        	step1000.setDisable(false);
+        	seedBtn.setDisable(false);
         });
 
         step100.setOnAction(event -> {
+        	int animSpeed = 0;
+        	if (animTF.getText() != null) {
+        		try {
+        			animSpeed = Integer.parseInt(animTF.getText());
+        		} catch (Exception e) {
+        			
+        		}
+        	}
+        	
+        	makeBtn.setDisable(true);
+        	critterMenu.setDisable(true);
+        	stats.setDisable(true);
+        	statsButton.setDisable(true);
+        	step1.setDisable(true);
+        	step10.setDisable(true);
+        	step100.setDisable(true);
+        	step1000.setDisable(true);
+        	seedBtn.setDisable(true);
+        	
             for (int i = 0; i < 100; i++) {
                 Critter.worldTimeStep();
+                if((animSpeed != 0) && (i % animSpeed == 0)) {
+                	updateView(grid);
+                	try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						
+					}
+                }
             }
             updateView(grid);
+            
+            makeBtn.setDisable(false);
+        	critterMenu.setDisable(false);
+        	stats.setDisable(false);
+        	statsButton.setDisable(false);
+        	step1.setDisable(false);
+        	step10.setDisable(false);
+        	step100.setDisable(false);
+        	step1000.setDisable(false);
+        	seedBtn.setDisable(false);
         });
 
         step1000.setOnAction(event -> {
+        	int animSpeed = 0;
+        	if (animTF.getText() != null) {
+        		try {
+        			animSpeed = Integer.parseInt(animTF.getText());
+        		} catch (Exception e) {
+        			
+        		}
+        	}
+        	
+        	makeBtn.setDisable(true);
+        	critterMenu.setDisable(true);
+        	stats.setDisable(true);
+        	statsButton.setDisable(true);
+        	step1.setDisable(true);
+        	step10.setDisable(true);
+        	step100.setDisable(true);
+        	step1000.setDisable(true);
+        	seedBtn.setDisable(true);
+        	
             for (int i = 0; i < 1000; i++) {
                 Critter.worldTimeStep();
+                if((animSpeed != 0) && (i % animSpeed == 0)) {
+                	updateView(grid);
+                	try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						
+					}
+                }
             }
             updateView(grid);
+            
+            makeBtn.setDisable(false);
+        	critterMenu.setDisable(false);
+        	stats.setDisable(false);
+        	statsButton.setDisable(false);
+        	step1.setDisable(false);
+        	step10.setDisable(false);
+        	step100.setDisable(false);
+        	step1000.setDisable(false);
+        	seedBtn.setDisable(false);
         });
+        
+        
+        seedBtn.setOnAction(event -> {
+        	if (seedTF.getText() != null) {
+        		try {
+        			int newSeed = Integer.parseInt(seedTF.getText());
+        			Critter.setSeed(newSeed);
+        		} catch (Exception e) {
+        			
+        		}
+        	}
+        });
+        
 
         quit.setOnAction(event -> {
             System.exit(0);
         });
 
     }
-
-
-
-
 
 
     
