@@ -62,7 +62,7 @@ public abstract class Critter {
 		myPackage = Critter.class.getPackage().toString().split(" ")[1];
 	}
 	
-	private	static List<Critter> lookPopulation = new ArrayList<Critter>(); // population that look() uses
+	private static List<Critter> lookPopulation = new ArrayList<Critter>(); // population that look() uses
 	
 	/**
 	 * This method looks for another Critter in the spot that is the
@@ -338,7 +338,8 @@ public abstract class Critter {
 	public static void clearWorld() {
 		// Complete this method.
 	}
-	
+
+
 	/**
 	 * This method performs one time step for each Critter in the Critter collection.
 	 */
@@ -400,22 +401,22 @@ public abstract class Critter {
                         if (cValue >= otherValue) { // if Critter c wins fight or if tie
                             c.energy += (otherCritter.energy)/2;
                             otherCritter.energy = 0;
-                            population.remove(otherCritter);
+                           // population.remove(otherCritter);
                             world[c.y_coord][c.x_coord] = c;
                         } else { // other Critter wins
                         	otherCritter.energy += c.energy/2;
                         	c.energy = 0;
-                        	population.remove(c);
+                        //	population.remove(c);
                         }
                     } else if (c.energy > 0) { // if other Critter dead but Critter c alive
                     	world[c.y_coord][c.x_coord] = c;
-                    	population.remove(otherCritter);
+                    	//population.remove(otherCritter);
                     } else if ((c.energy <= 0) && (otherCritter.energy <= 0)) { // if both Critters dead
                     	world[c.y_coord][c.x_coord] = null;
-                    	population.remove(c);
-                    	population.remove(otherCritter);
+                    //	population.remove(c);
+                    //	population.remove(otherCritter);
                     } else { // if Critter c dead but other Critter alive
-                    	population.remove(c);
+                    //	population.remove(c);
                     }
                 }
             }

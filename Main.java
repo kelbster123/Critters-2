@@ -121,7 +121,7 @@ public class Main extends Application {
 
         // .\\out\\production\\assignment5\\
 
-        File file = new File("./bin/" + myPackage);
+        File file = new File(".\\out\\production\\assignment5\\" + myPackage);
         String[] critterClasses = file.list();
         for (String s : critterClasses) {
         	try {
