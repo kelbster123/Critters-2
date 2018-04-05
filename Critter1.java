@@ -38,8 +38,11 @@ public class Critter1 extends Critter {
 
 	@Override
 	public CritterShape viewShape() {
-		return null;
+		return CritterShape.CIRCLE;
 	}
+
+	@Override
+	public javafx.scene.paint.Color viewColor() { return javafx.scene.paint.Color.BLUE; }
 
 	@Override
 	public String toString () {
@@ -49,9 +52,9 @@ public class Critter1 extends Critter {
 	/**
      * This method prints out the specific statistics for this Critter.
      */
-    public static void runStats(List<Critter> critters) {
-        Critter.runStats(critters);
-        
-        System.out.println("Critter1s have attempted to fight a total of " + numFights + " fights in this world so far");
+    public static String runStats(List<Critter> critters) {
+        String s = Critter.runStats(critters);
+        s += "\nCritter1s have attempted to fight a total of " + numFights + " fights in this world so far";
+        return s;
     }
 }

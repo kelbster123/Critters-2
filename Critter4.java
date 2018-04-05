@@ -63,12 +63,13 @@ public class Critter4 extends Critter {
     /**
      * This method prints out the specific statistics for this Critter.
      */
-    public static void runStats(List<Critter> critters) {
-        Critter.runStats(critters);
-        
-        System.out.println("Critter4s have moved during their doTimeStep a total of " + numWalk + " times in this world so far");
-        System.out.println("Critter4s have been lazy and not moved a total of " + numLazy + " times in this world so far");
-        System.out.println("Critter4s have ran from fights a total of " + numRuns + " times in this world so far");
-        System.out.println("Critter4s have decided to fight a total of " + numFights + " times in this world so far");
+    public static String runStats(List<Critter> critters) {
+        String s = Critter.runStats(critters);
+        s += "\nCritter4s have moved during their doTimeStep a total of " + numWalk + " times in this world so far";
+        s += "\nCritter4s have been lazy and not moved a total of " + numLazy + " times in this world so far";
+        s += "\nCritter4s have ran from fights a total of " + numRuns + " times in this world so far";
+        s += "\nCritter4s have decided to fight a total of " + numFights + " times in this world so far";
+        return s;
+
     }
 }

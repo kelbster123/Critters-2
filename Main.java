@@ -14,6 +14,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
@@ -62,27 +63,86 @@ public class Main extends Application {
     public void start(final Stage primaryStage) {
         primaryStage.setTitle("Critters");
         BorderPane border = new BorderPane();
-        Scene scene = new Scene(border, 400, 400);
+        Scene scene = new Scene(border, 1000, 1000);
         primaryStage.setScene(scene);
         
         GridPane grid = new GridPane();
         FlowPane control = new FlowPane();
         border.setTop(control);
         border.setCenter(grid);
+
+        Label statLabel = new Label("Stats: ");
+        border.setBottom(statLabel);
+
+        Button makeBtn1 = new Button("Make1");
+        control.getChildren().add(makeBtn1);
+
+        Button makeBtn10 = new Button("Make10");
+        control.getChildren().add(makeBtn10);
+
+        Button makeBtn100 = new Button("Make100");
+        control.getChildren().add(makeBtn100);
+
+
         
-        Button makeBtn = new Button("Make");
-        control.getChildren().add(makeBtn);
-        
-        MenuButton critterMenu = new MenuButton("Hello");
+        MenuButton critterMenu = new MenuButton("Critter To Make");
         control.getChildren().add(critterMenu);
-        File file = new File("./bin/" + myPackage);
+
+
+        Button statsButton = new Button("Stats");
+        control.getChildren().add(statsButton);
+
+        MenuButton stats = new MenuButton("Critter To Stats");
+        control.getChildren().add(stats);
+
+
+        Button step1 = new Button("Step 1");
+        control.getChildren().add(step1);
+
+        Button step10 = new Button("Step 10");
+        control.getChildren().add(step10);
+
+        Button step100 = new Button("Step 100");
+        control.getChildren().add(step100);
+
+        Button step1000 = new Button("Step 1000");
+        control.getChildren().add(step1000);
+
+        Button quit = new Button("quit");
+        control.getChildren().add(quit);
+
+
+
+
+
+        File file = new File(".\\out\\production\\assignment5\\" + myPackage);
         String[] critterClasses = file.list();
+        for (String s: critterClasses) {
+            System.out.println(s);
+        }
         for (String s : critterClasses) {
         	try {
 				if (Class.forName(myPackage + ".Critter").isAssignableFrom(Class.forName(myPackage + "." + s.substring(0, s.length() - 6)))) {
 					if (!s.equals("Critter.class") && !s.equals("Critter$TestCritter.class")) {
-				        critterMenu.getItems().add(new MenuItem(s.substring(0, s.length() - 6)));
+                        MenuItem critter = new MenuItem(s.substring(0, s.length() - 6));
+                        critter.setOnAction(event -> {
+                             critterMenu.setText(s.substring(0, s.length() - 6));
+                        });
+				        critterMenu.getItems().add(critter);
+
+                        MenuItem statCrit = new MenuItem(s.substring(0, s.length() - 6));
+                        statCrit.setOnAction(event -> {
+                            stats.setText(s.substring(0, s.length() - 6));
+                        });
+                        stats.getItems().add(statCrit);
 					}
+					if (s.equals("Critter.class")) {
+                        MenuItem statCrit = new MenuItem(s.substring(0, s.length() - 6));
+                        statCrit.setOnAction(event -> {
+                            stats.setText(s.substring(0, s.length() - 6));
+                        });
+                        stats.getItems().add(statCrit);
+                    }
 					
 				}
 			} catch (ClassNotFoundException e) {
@@ -90,12 +150,126 @@ public class Main extends Application {
 				e.printStackTrace();
 			}
         }
-        
+
+       // critterMenu.setText(critterMenu.getItems().get(0).getText());
+        //stats.setText(stats.getItems().get(0).getText());
+
+
+
+
         
         
         updateView(grid);
         primaryStage.show();
+
+
+        makeBtn1.setOnAction(event -> {
+            String critterToMake = critterMenu.getItems().get(0).getText();
+            if(!critterMenu.getText().equals("Critter To Make")) {
+                critterToMake = critterMenu.getText();
+            }
+            try{
+                Critter.makeCritter(critterToMake);
+                updateView(grid);
+            }
+            catch(Exception e){
+                System.out.println("Error");
+            }
+
+        });
+
+        makeBtn10.setOnAction(event -> {
+            String critterToMake = critterMenu.getItems().get(0).getText();
+            if(!critterMenu.getText().equals("Critter To Make")) {
+                critterToMake = critterMenu.getText();
+            }
+            try{
+                for (int i = 0; i < 10; i++) {
+                    Critter.makeCritter(critterToMake);
+                }
+                updateView(grid);
+            }
+            catch(Exception e){
+                System.out.println("Error");
+            }
+
+        });
+
+        makeBtn100.setOnAction(event -> {
+            String critterToMake = critterMenu.getItems().get(0).getText();
+            if(!critterMenu.getText().equals("Critter To Make")) {
+                critterToMake = critterMenu.getText();
+            }
+            try{
+                for (int i = 0; i < 100; i++) {
+                    Critter.makeCritter(critterToMake);
+                }
+                updateView(grid);
+            }
+            catch(Exception e){
+                System.out.println("Error");
+            }
+
+        });
+
+        statsButton.setOnAction(event -> {
+            String critterToStats = stats.getItems().get(0).getText();
+            if(!stats.getText().equals("Critter To Stats")) {
+                critterToStats = stats.getText();
+            }
+            try{
+                List<Critter> listOfCritters = Critter.getInstances(critterToStats);
+                Class<?> classType = Class.forName(myPackage + "." + critterToStats);
+                String result = (String) classType.getMethod("runStats", List.class).invoke(null, listOfCritters);
+                statLabel.setText("Stats: \n" + result);
+            }
+            catch(Exception e) {
+                System.out.println("Error in Stats");
+            }
+
+        });
+
+
+
+
+
+        step1.setOnAction(event -> {
+            Critter.worldTimeStep();
+            updateView(grid);
+        });
+
+        step10.setOnAction(event -> {
+            for (int i = 0; i < 10; i++) {
+                Critter.worldTimeStep();
+            }
+            updateView(grid);
+        });
+
+        step100.setOnAction(event -> {
+            for (int i = 0; i < 100; i++) {
+                Critter.worldTimeStep();
+            }
+            updateView(grid);
+        });
+
+        step1000.setOnAction(event -> {
+            for (int i = 0; i < 1000; i++) {
+                Critter.worldTimeStep();
+            }
+            updateView(grid);
+        });
+
+        quit.setOnAction(event -> {
+            System.exit(0);
+        });
+
     }
+
+
+
+
+
+
     
     private void updateView(GridPane grid) {
     	grid.getChildren().clear();

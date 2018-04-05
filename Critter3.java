@@ -58,9 +58,9 @@ public class Critter3 extends Critter {
     /**
      * This method prints out the specific statistics for this Critter.
      */
-    public static void runStats(List<Critter> critters) {
-        Critter.runStats(critters);
-        
-        System.out.println("Critter3s have attempted to reproduce a total of " + attemptedReproduces + " times in this world so far");
+    public static String runStats(List<Critter> critters) {
+        String s = Critter.runStats(critters);
+        s += "\nCritter3s have attempted to reproduce a total of " + attemptedReproduces + " times in this world so far";
+        return s;
     }
 }
