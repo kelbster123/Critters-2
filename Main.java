@@ -17,11 +17,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
@@ -57,7 +60,7 @@ public class Main extends Application {
     
     static int numRows = Params.world_height;
 	static int numColumns = Params.world_width;
-	static int size = 5;
+	static int size = 30;
     
     @Override
     public void start(final Stage primaryStage) {
@@ -74,25 +77,28 @@ public class Main extends Application {
         Label statLabel = new Label("Stats: ");
         border.setBottom(statLabel);
 
-        Button makeBtn1 = new Button("Make1");
-        control.getChildren().add(makeBtn1);
-
-        Button makeBtn10 = new Button("Make10");
-        control.getChildren().add(makeBtn10);
-
-        Button makeBtn100 = new Button("Make100");
-        control.getChildren().add(makeBtn100);
+        Button makeBtn = new Button("Make");
+        control.getChildren().add(makeBtn);
 
 
         
-        MenuButton critterMenu = new MenuButton("Critter To Make");
+        MenuButton critterMenu = new MenuButton("Critter to Make");
         control.getChildren().add(critterMenu);
+        
+        
+        HBox hb = new HBox();
+        Label lb = new Label("Number to Make");
+        TextField tf = new TextField();
+        tf.setMaxWidth(60);
+        hb.getChildren().addAll(lb, tf);
+        hb.setSpacing(5);
+        control.getChildren().add(hb);
 
 
         Button statsButton = new Button("Stats");
         control.getChildren().add(statsButton);
 
-        MenuButton stats = new MenuButton("Critter To Stats");
+        MenuButton stats = new MenuButton("Critter to Stats");
         control.getChildren().add(stats);
 
 
@@ -113,13 +119,10 @@ public class Main extends Application {
 
 
 
+        // .\\out\\production\\assignment5\\
 
-
-        File file = new File(".\\out\\production\\assignment5\\" + myPackage);
+        File file = new File("./bin/" + myPackage);
         String[] critterClasses = file.list();
-        for (String s: critterClasses) {
-            System.out.println(s);
-        }
         for (String s : critterClasses) {
         	try {
 				if (Class.forName(myPackage + ".Critter").isAssignableFrom(Class.forName(myPackage + "." + s.substring(0, s.length() - 6)))) {
@@ -163,46 +166,23 @@ public class Main extends Application {
         primaryStage.show();
 
 
-        makeBtn1.setOnAction(event -> {
+        makeBtn.setOnAction(event -> {
             String critterToMake = critterMenu.getItems().get(0).getText();
-            if(!critterMenu.getText().equals("Critter To Make")) {
+            if(!critterMenu.getText().equals("Critter to Make")) {
                 critterToMake = critterMenu.getText();
             }
             try{
-                Critter.makeCritter(critterToMake);
-                updateView(grid);
-            }
-            catch(Exception e){
-                System.out.println("Error");
-            }
-
-        });
-
-        makeBtn10.setOnAction(event -> {
-            String critterToMake = critterMenu.getItems().get(0).getText();
-            if(!critterMenu.getText().equals("Critter To Make")) {
-                critterToMake = critterMenu.getText();
-            }
-            try{
-                for (int i = 0; i < 10; i++) {
-                    Critter.makeCritter(critterToMake);
-                }
-                updateView(grid);
-            }
-            catch(Exception e){
-                System.out.println("Error");
-            }
-
-        });
-
-        makeBtn100.setOnAction(event -> {
-            String critterToMake = critterMenu.getItems().get(0).getText();
-            if(!critterMenu.getText().equals("Critter To Make")) {
-                critterToMake = critterMenu.getText();
-            }
-            try{
-                for (int i = 0; i < 100; i++) {
-                    Critter.makeCritter(critterToMake);
+            	int numToMake = 0;
+            	if (tf.getText() != null) {
+            		try {
+            			numToMake = Integer.parseInt(tf.getText());
+            		} catch (Exception e) {
+            			
+            		}
+            	}
+            	
+                for (int count = 0; count < numToMake; count++) {
+                	Critter.makeCritter(critterToMake);
                 }
                 updateView(grid);
             }
@@ -214,7 +194,7 @@ public class Main extends Application {
 
         statsButton.setOnAction(event -> {
             String critterToStats = stats.getItems().get(0).getText();
-            if(!stats.getText().equals("Critter To Stats")) {
+            if(!stats.getText().equals("Critter to Stats")) {
                 critterToStats = stats.getText();
             }
             try{
@@ -297,16 +277,44 @@ public class Main extends Application {
     
     private Shape getShape(Critter.CritterShape shape) {
     	switch (shape) {
-    		case CIRCLE: return new Circle(size/2.0);
-    		case SQUARE: return new Rectangle(size, size);
-    		default: return new Circle(size/2.0);
-    					 
-    		//add others
-    		/*
-			TRIANGLE,
-			DIAMOND,
-			STAR
-    		*/
+    		case CIRCLE:
+    			return new Circle(size/2.0);
+    		case SQUARE:
+    			return new Rectangle(size, size);
+    		case TRIANGLE: 
+    			Polygon triangle = new Polygon();
+    			triangle.getPoints().addAll(new Double[] {
+    					size/2.0, 1.0,
+    					1.0, size - 1.0,
+    					size - 1.0, size - 1.0,
+    			});
+    			return triangle;
+    		case DIAMOND:
+    			Polygon diamond = new Polygon();
+    			diamond.getPoints().addAll(new Double[] {
+    					size/2.0, 1.0,
+    					1.0, size/2.0,
+    					size/2.0, size - 1.0,
+    					size - 1.0, size/2.0,
+    			});
+    			return diamond;
+    		case STAR:
+    			Polygon star = new Polygon();
+    			star.getPoints().addAll(new Double[] {
+    					size/2.0, 2.0,
+    					size/1.7, size/3.0,
+    					size - 2.0, size/3.0,
+    					size/1.5, size*0.67,
+    					size - 3.0, size - 3.0,
+    					size/2.0, size*0.75,
+    					1.0, size - 1.0,
+    					size*0.22, size*0.67,
+    					1.0, size/3.0,
+    					size*0.31, size/3.0,
+    			});
+    			return star;
+    		default:
+    			return new Circle(size/2.0);
     	}
     }
 

@@ -47,8 +47,14 @@ public class Critter3 extends Critter {
 
     @Override
     public CritterShape viewShape() {
-        return null;
+        return CritterShape.SQUARE;
     }
+    
+    @Override
+	public javafx.scene.paint.Color viewColor() { return javafx.scene.paint.Color.YELLOW; }
+    
+    @Override
+	public javafx.scene.paint.Color viewOutlineColor() { return javafx.scene.paint.Color.BLACK; }
 
     @Override
     public String toString () {
