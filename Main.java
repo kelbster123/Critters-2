@@ -10,7 +10,11 @@ package assignment5;
  * Spring 2018
  */
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
@@ -28,8 +32,10 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -61,13 +67,16 @@ public class Main extends Application {
     
     static int numRows = Params.world_height;
 	static int numColumns = Params.world_width;
-	static int size = 30;
+
+	static int size = 700/Integer.max(numRows, numColumns);
+
+
     
     @Override
     public void start(final Stage primaryStage) {
         primaryStage.setTitle("Critters");
         BorderPane border = new BorderPane();
-        Scene scene = new Scene(border, 1000, 1000);
+        Scene scene = new Scene(border, 700, 700);
         primaryStage.setScene(scene);
         
         GridPane grid = new GridPane();
@@ -137,9 +146,13 @@ public class Main extends Application {
 
 
 
+
+
+
+
         // .\\out\\production\\assignment5\\
 
-        File file = new File("./bin/" + myPackage);
+        File file = new File(".\\out\\production\\assignment5\\" + myPackage);
         String[] critterClasses = file.list();
         for (String s : critterClasses) {
         	try {
@@ -175,6 +188,10 @@ public class Main extends Application {
        // critterMenu.setText(critterMenu.getItems().get(0).getText());
         //stats.setText(stats.getItems().get(0).getText());
 
+
+
+		final ArrayList<Integer> num = new ArrayList<>();
+		num.add(0);
 
 
 
@@ -237,92 +254,158 @@ public class Main extends Application {
         });
 
         step10.setOnAction(event -> {
-        	int animSpeed = 0;
-        	if (animTF.getText() != null) {
-        		try {
-        			animSpeed = Integer.parseInt(animTF.getText());
-        		} catch (Exception e) {
-        			
-        		}
-        	}
-        	
-        	makeBtn.setDisable(true);
-        	critterMenu.setDisable(true);
-        	stats.setDisable(true);
-        	statsButton.setDisable(true);
-        	step1.setDisable(true);
-        	step10.setDisable(true);
-        	step100.setDisable(true);
-        	step1000.setDisable(true);
-        	seedBtn.setDisable(true);
-        	
-            for (int i = 0; i < 10; i++) {
-                Critter.worldTimeStep();
-                if((animSpeed != 0) && (i % animSpeed == 0)) {
-                	updateView(grid);
-                	try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						
-					}
-                }
-            }
-            updateView(grid);
-            
-            makeBtn.setDisable(false);
-        	critterMenu.setDisable(false);
-        	stats.setDisable(false);
-        	statsButton.setDisable(false);
-        	step1.setDisable(false);
-        	step10.setDisable(false);
-        	step100.setDisable(false);
-        	step1000.setDisable(false);
-        	seedBtn.setDisable(false);
+			int animSpeed = 0;
+			if (animTF.getText() != null) {
+				try {
+					animSpeed = Integer.parseInt(animTF.getText());
+				} catch (Exception e) {
+
+				}
+			}
+
+			if(animSpeed <= 0) {
+				for(int i = 0; i < 10; i++) {
+					Critter.worldTimeStep();
+				}
+				updateView(grid);
+			}else {
+				makeBtn.setDisable(true);
+				critterMenu.setDisable(true);
+				stats.setDisable(true);
+				statsButton.setDisable(true);
+				step1.setDisable(true);
+				step10.setDisable(true);
+				step100.setDisable(true);
+				step1000.setDisable(true);
+				seedBtn.setDisable(true);
+
+				Timeline t = new Timeline();
+				t.setCycleCount(10/animSpeed);
+				num.set(0, animSpeed);
+				KeyFrame update = new KeyFrame(Duration.seconds(0.2),
+						new EventHandler<ActionEvent>() {
+
+							public void handle(ActionEvent event) {
+								for(int idx = 0; idx < num.get(0); idx++) {
+									Critter.worldTimeStep();
+								}
+								updateView(grid);
+
+								String critterToStats = "Critter";
+								if(!stats.getText().equals("Critter to Stats")) {
+									critterToStats = stats.getText();
+								}
+								try{
+									List<Critter> listOfCritters = Critter.getInstances(critterToStats);
+									Class<?> classType = Class.forName(myPackage + "." + critterToStats);
+									String result = (String) classType.getMethod("runStats", List.class).invoke(null, listOfCritters);
+									statLabel.setText("Stats: \n" + result);
+								}
+								catch(Exception e) {
+									System.out.println("Error in Stats");
+								}
+
+
+							}
+						});
+				t.getKeyFrames().add(update);
+				t.play();
+
+				for(int i = 0; i < 10%animSpeed; i++) {
+					Critter.worldTimeStep();
+				}
+				updateView(grid);
+
+				makeBtn.setDisable(false);
+				critterMenu.setDisable(false);
+				stats.setDisable(false);
+				statsButton.setDisable(false);
+				step1.setDisable(false);
+				step10.setDisable(false);
+				step100.setDisable(false);
+				step1000.setDisable(false);
+				seedBtn.setDisable(false);
+
+			}
         });
 
         step100.setOnAction(event -> {
-        	int animSpeed = 0;
-        	if (animTF.getText() != null) {
-        		try {
-        			animSpeed = Integer.parseInt(animTF.getText());
-        		} catch (Exception e) {
-        			
-        		}
-        	}
-        	
-        	makeBtn.setDisable(true);
-        	critterMenu.setDisable(true);
-        	stats.setDisable(true);
-        	statsButton.setDisable(true);
-        	step1.setDisable(true);
-        	step10.setDisable(true);
-        	step100.setDisable(true);
-        	step1000.setDisable(true);
-        	seedBtn.setDisable(true);
-        	
-            for (int i = 0; i < 100; i++) {
-                Critter.worldTimeStep();
-                if((animSpeed != 0) && (i % animSpeed == 0)) {
-                	updateView(grid);
-                	try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						
-					}
-                }
-            }
-            updateView(grid);
-            
-            makeBtn.setDisable(false);
-        	critterMenu.setDisable(false);
-        	stats.setDisable(false);
-        	statsButton.setDisable(false);
-        	step1.setDisable(false);
-        	step10.setDisable(false);
-        	step100.setDisable(false);
-        	step1000.setDisable(false);
-        	seedBtn.setDisable(false);
+			int animSpeed = 0;
+			if (animTF.getText() != null) {
+				try {
+					animSpeed = Integer.parseInt(animTF.getText());
+				} catch (Exception e) {
+
+				}
+			}
+
+			if(animSpeed <= 0) {
+				for(int i = 0; i < 100; i++) {
+					Critter.worldTimeStep();
+				}
+				updateView(grid);
+			}else {
+				makeBtn.setDisable(true);
+				critterMenu.setDisable(true);
+				stats.setDisable(true);
+				statsButton.setDisable(true);
+				step1.setDisable(true);
+				step10.setDisable(true);
+				step100.setDisable(true);
+				step1000.setDisable(true);
+				seedBtn.setDisable(true);
+
+				Timeline t = new Timeline();
+				t.setCycleCount(100/animSpeed);
+				num.set(0, animSpeed);
+				KeyFrame update = new KeyFrame(Duration.seconds(0.2),
+						new EventHandler<ActionEvent>() {
+
+							public void handle(ActionEvent event) {
+								for(int idx = 0; idx < num.get(0); idx++) {
+									Critter.worldTimeStep();
+								}
+								updateView(grid);
+
+
+								String critterToStats = "Critter";
+								if(!stats.getText().equals("Critter to Stats")) {
+									critterToStats = stats.getText();
+								}
+								try{
+									List<Critter> listOfCritters = Critter.getInstances(critterToStats);
+									Class<?> classType = Class.forName(myPackage + "." + critterToStats);
+									String result = (String) classType.getMethod("runStats", List.class).invoke(null, listOfCritters);
+									statLabel.setText("Stats: \n" + result);
+								}
+								catch(Exception e) {
+									System.out.println("Error in Stats");
+								}
+
+							}
+						});
+				t.getKeyFrames().add(update);
+				t.play();
+
+				for(int i = 0; i < 100%animSpeed; i++) {
+					Critter.worldTimeStep();
+				}
+				updateView(grid);
+
+				makeBtn.setDisable(false);
+				critterMenu.setDisable(false);
+				stats.setDisable(false);
+				statsButton.setDisable(false);
+				step1.setDisable(false);
+				step10.setDisable(false);
+				step100.setDisable(false);
+				step1000.setDisable(false);
+				seedBtn.setDisable(false);
+
+			}
         });
+
+
 
         step1000.setOnAction(event -> {
         	int animSpeed = 0;
@@ -333,39 +416,70 @@ public class Main extends Application {
         			
         		}
         	}
-        	
-        	makeBtn.setDisable(true);
-        	critterMenu.setDisable(true);
-        	stats.setDisable(true);
-        	statsButton.setDisable(true);
-        	step1.setDisable(true);
-        	step10.setDisable(true);
-        	step100.setDisable(true);
-        	step1000.setDisable(true);
-        	seedBtn.setDisable(true);
-        	
-            for (int i = 0; i < 1000; i++) {
-                Critter.worldTimeStep();
-                if((animSpeed != 0) && (i % animSpeed == 0)) {
-                	updateView(grid);
-                	try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						
-					}
-                }
-            }
-            updateView(grid);
-            
-            makeBtn.setDisable(false);
-        	critterMenu.setDisable(false);
-        	stats.setDisable(false);
-        	statsButton.setDisable(false);
-        	step1.setDisable(false);
-        	step10.setDisable(false);
-        	step100.setDisable(false);
-        	step1000.setDisable(false);
-        	seedBtn.setDisable(false);
+
+        	if(animSpeed <= 0) {
+        		for(int i = 0; i < 1000; i++) {
+        			Critter.worldTimeStep();
+				}
+				updateView(grid);
+			}else {
+				makeBtn.setDisable(true);
+				critterMenu.setDisable(true);
+				stats.setDisable(true);
+				statsButton.setDisable(true);
+				step1.setDisable(true);
+				step10.setDisable(true);
+				step100.setDisable(true);
+				step1000.setDisable(true);
+				seedBtn.setDisable(true);
+
+				Timeline t = new Timeline();
+				t.setCycleCount(1000/animSpeed);
+				num.set(0, animSpeed);
+				KeyFrame update = new KeyFrame(Duration.seconds(0.2),
+						new EventHandler<ActionEvent>() {
+
+							public void handle(ActionEvent event) {
+								for(int idx = 0; idx < num.get(0); idx++) {
+									Critter.worldTimeStep();
+								}
+								updateView(grid);
+
+								String critterToStats = "Critter";
+								if(!stats.getText().equals("Critter to Stats")) {
+									critterToStats = stats.getText();
+								}
+								try{
+									List<Critter> listOfCritters = Critter.getInstances(critterToStats);
+									Class<?> classType = Class.forName(myPackage + "." + critterToStats);
+									String result = (String) classType.getMethod("runStats", List.class).invoke(null, listOfCritters);
+									statLabel.setText("Stats: \n" + result);
+								}
+								catch(Exception e) {
+									System.out.println("Error in Stats");
+								}
+							}
+						});
+				t.getKeyFrames().add(update);
+				t.play();
+
+				for(int i = 0; i < 1000%animSpeed; i++) {
+					Critter.worldTimeStep();
+				}
+				updateView(grid);
+
+				makeBtn.setDisable(false);
+				critterMenu.setDisable(false);
+				stats.setDisable(false);
+				statsButton.setDisable(false);
+				step1.setDisable(false);
+				step10.setDisable(false);
+				step100.setDisable(false);
+				step1000.setDisable(false);
+				seedBtn.setDisable(false);
+
+			}
+
         });
         
         
@@ -408,7 +522,7 @@ public class Main extends Application {
 				Shape rect = new Rectangle(size, size);
 				rect.setFill(null);
 				rect.setStroke(Color.GRAY);
-				grid.add(rect, row, col);
+				grid.add(rect, col, row);
 			}
 		}
 	}
@@ -462,123 +576,4 @@ public class Main extends Application {
      * @param args args can be empty. If not empty, provide two parameters -- the first is a file name, 
      * and the second is test (for test output, where all output to be directed to a String), or nothing.
      */
-//    public static void main(String[] args) {
-//        if (args.length != 0) {
-//            try {
-//                inputFile = args[0];
-//                kb = new Scanner(new File(inputFile));
-//            } catch (FileNotFoundException e) {
-//                System.out.println("USAGE: java Main OR java Main <input file> <test output>");
-//                e.printStackTrace();
-//            } catch (NullPointerException e) {
-//                System.out.println("USAGE: java Main OR java Main <input file>  <test output>");
-//            }
-//            if (args.length >= 2) {
-//                if (args[1].equals("test")) { // if the word "test" is the second argument to java
-//                    // Create a stream to hold the output
-//                    testOutputString = new ByteArrayOutputStream();
-//                    PrintStream ps = new PrintStream(testOutputString);
-//                    // Save the old System.out.
-//                    old = System.out;
-//                    // Tell Java to use the special stream; all console output will be redirected here from now
-//                    System.setOut(ps);
-//                }
-//            }
-//        } else { // if no arguments to main
-//            kb = new Scanner(System.in); // use keyboard and console
-//        }
-//
-//        /* Do not alter the code above for your submission. */
-//        boolean running = true;
-//
-//        while(running) { // while user has not entered "quit"
-//           System.out.print("critters>");
-//           String cmd = kb.nextLine();
-//           Scanner command = new Scanner(cmd);
-//           command.useDelimiter("\\s+");
-//           String s = command.next();
-//           try {
-//               switch(s){ // perform operation that corresponds to user input
-//                   case "quit":
-//                       if (command.hasNext()) {
-//                           throw new Exception();
-//                       }
-//                       Critter.clearWorld();
-//                       running = false;
-//                       break;
-//
-//                   case "show":
-//                       if (command.hasNext()) {
-//                           throw new Exception();
-//                       }
-//                       Critter.displayWorld();
-//                       break;
-//
-//                   case "step":
-//                       int count = 1;
-//                       if (command.hasNextInt()) {
-//                           count = command.nextInt();
-//                       }
-//                       if (command.hasNext()) {
-//                           throw new Exception();
-//                       }
-//                       for (int i = 0; i < count; i++) {
-//                           Critter.worldTimeStep();
-//                       }
-//                       break;
-//
-//                   case "seed":
-//                       if (command.hasNextInt()) {
-//                           int seed = command.nextInt();
-//                           if(command.hasNext()) {
-//                               throw new Exception();
-//                           }
-//                           Critter.setSeed(seed);
-//                       }
-//                       break;
-//
-//                   case "make":
-//                	   if (!command.hasNext()) {
-//                		   throw new Exception();
-//                	   }
-//                       String critter = command.next();
-//
-//                       int crittersToMake = 1;
-//                       if(command.hasNextInt()) {
-//                           crittersToMake = command.nextInt();
-//                       }
-//                       if(command.hasNext()) {
-//                           throw new Exception();
-//                       }
-//
-//                       for(int numCreated = 0; numCreated < crittersToMake; numCreated++) {
-//                            Critter.makeCritter(critter);
-//                       }
-//                       break;
-//
-//                   case "stats":
-//                	   if (!command.hasNext()) {
-//                		   throw new Exception();
-//                	   }
-//                	   String c = command.next();
-//                	   if(command.hasNext()) {
-//                           throw new Exception();
-//                       }
-//                	   List<Critter> listOfCritters = Critter.getInstances(c);
-//                	   Class<?> classType = Class.forName(myPackage + "." + c);
-//                	   classType.getMethod("runStats", List.class).invoke(null, listOfCritters);
-//                	   break;
-//
-//                   default:
-//                       System.out.println("invalid command: " + cmd);
-//               }
-//           }
-//           catch (Exception | NoClassDefFoundError e) { // catch any exceptions and the error that results from using the lowercase version of a valid Critter name
-//               System.out.println("error processing: " + cmd);
-//           }
-//
-//        }
-//
-//        System.out.flush();
-//    }
 }

@@ -260,7 +260,7 @@ public abstract class Critter {
 	public static String runStats(List<Critter> critters) {
 		String result = "" + critters.size() + " critters as follows -- ";
 
-		System.out.print("" + critters.size() + " critters as follows -- ");
+
 		java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
 		for (Critter crit : critters) {
 			String crit_string = crit.toString();
@@ -461,37 +461,7 @@ public abstract class Critter {
 	 */
 	public static List<Critter> displayWorld() {
 		return population;
-		/*
-		String[][] world = new String[Params.world_height][Params.world_width]; // 2D array of chars representing the world
-		for (int row = 0; row < world.length; row++) {
-			for (int col = 0; col < world[row].length; col++) {
-				world[row][col] = " "; // initialize world with empty spaces
-			}
-		}
-		
-		for (Critter c : population) { // fill array with char for each Critter in world
-			world[c.y_coord][c.x_coord] = c.toString();
-		}
-		
-		// print out world by iterating through 2D array
-		System.out.print("+");
-		for (int n = 0; n < Params.world_width; n++) {
-			System.out.print("-");
-		}
-		System.out.println("+");
-		for (int row = 0; row < Params.world_height; row++) {
-			System.out.print("|");
-			for (String s : world[row]) {
-				System.out.print(s);
-			}
-			System.out.println("|");
-		}
-		System.out.print("+");
-		for (int n = 0; n < Params.world_width; n++) {
-			System.out.print("-");
-		}
-		System.out.println("+");
-		*/
+
 	}
 	
 	/**
