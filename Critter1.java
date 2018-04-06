@@ -1,6 +1,6 @@
 package assignment5;
 /* CRITTERS Critter1.java
- * EE422C Project 4 submission by
+ * EE422C Project 5 submission by
  * Varun Prabhu
  * vp6793
  * 15465

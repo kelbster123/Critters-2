@@ -1,6 +1,6 @@
 package assignment5;
 /* CRITTERS Main.java
- * EE422C Project 4 submission by
+ * EE422C Project 5 submission by
  * Varun Prabhu
  * vp6793
  * 15465
@@ -65,94 +65,83 @@ public class Main extends Application {
         myPackage = Critter.class.getPackage().toString().split(" ")[1];
     }
     
-    static int numRows = Params.world_height;
-	static int numColumns = Params.world_width;
+    static int numRows = Params.world_height; // number of rows in grid representing world
+	static int numColumns = Params.world_width; // number of rows in grid representing world
 
-	static int size = 700/Integer.max(numRows, numColumns);
-
-
-    
+	static int size = 450/Integer.max(numRows, numColumns); // length of one side of a single cell in the grid
+	
+	
+	
     @Override
     public void start(final Stage primaryStage) {
-        primaryStage.setTitle("Critters");
-        BorderPane border = new BorderPane();
-        Scene scene = new Scene(border, 700, 700);
+        primaryStage.setTitle("Critters"); // primary stage for GUI
+        BorderPane border = new BorderPane(); // BorderPane used so we can have top, center, and bottom sections
+        Scene scene = new Scene(border, 450, 450); // Scene containing BorderPane
         primaryStage.setScene(scene);
         
-        GridPane grid = new GridPane();
-        FlowPane control = new FlowPane();
+        GridPane grid = new GridPane(); // GridPane used to display world of Critters
+        FlowPane control = new FlowPane(); // FlowPane containing buttons at top of BorderPane
         border.setTop(control);
         border.setCenter(grid);
 
-        Label statLabel = new Label("Stats: ");
+        Label statLabel = new Label("Stats: "); // Label for stats control
         border.setBottom(statLabel);
 
-        Button makeBtn = new Button("Make");
+        Button makeBtn = new Button("Make"); // Button to make Critters
         control.getChildren().add(makeBtn);
-
-
         
-        MenuButton critterMenu = new MenuButton("Critter to Make");
+        // control for making Critters
+        MenuButton critterMenu = new MenuButton("Critter to Make"); // MenuButton to select which Critter to make
         control.getChildren().add(critterMenu);
-        
-        
         HBox hb = new HBox();
         Label lb = new Label("Number to Make");
-        TextField tf = new TextField();
+        TextField tf = new TextField(); // where user enters how many Critters to make
         tf.setMaxWidth(60);
         hb.getChildren().addAll(lb, tf);
         hb.setSpacing(5);
         control.getChildren().add(hb);
-        
 
-        Button statsButton = new Button("Stats");
+        Button statsButton = new Button("Stats"); // Button to display stats
         control.getChildren().add(statsButton);
 
-        MenuButton stats = new MenuButton("Critter to Stats");
+        MenuButton stats = new MenuButton("Critter to Stats"); // MenuButton to select which Critter to display stats for
         control.getChildren().add(stats);
 
 
-        Button step1 = new Button("Step 1");
+        Button step1 = new Button("Step 1"); // Button to take 1 time step and update display
         control.getChildren().add(step1);
 
-        Button step10 = new Button("Step 10");
+        Button step10 = new Button("Step 10"); // Button to take 10 time steps and update display
         control.getChildren().add(step10);
 
-        Button step100 = new Button("Step 100");
+        Button step100 = new Button("Step 100"); // Button to take 100 time steps and update display
         control.getChildren().add(step100);
 
-        Button step1000 = new Button("Step 1000");
+        Button step1000 = new Button("Step 1000"); // Button to take 1000 time steps and update display
         control.getChildren().add(step1000);
-        
         
         // animation controls
         HBox animHB = new HBox();
         Label animLB = new Label("Steps per Frame");
-        TextField animTF = new TextField();
+        TextField animTF = new TextField(); // where user enters how fast to perform animation
         animTF.setMaxWidth(60);
         animHB.getChildren().addAll(animLB, animTF);
         animHB.setSpacing(5);
         control.getChildren().add(animHB);
         
         // seed controls
-        Button seedBtn = new Button("Set Seed");
-        TextField seedTF = new TextField();
+        Button seedBtn = new Button("Set Seed"); // Button used to set the seed
+        TextField seedTF = new TextField(); // where user enters new seed value
         seedTF.setMaxWidth(60);
         control.getChildren().addAll(seedBtn, seedTF);
         
-
-        Button quit = new Button("quit");
+        Button quit = new Button("quit"); // Button to quit application
         control.getChildren().add(quit);
-
-
-
-
-
-
-
-        // .\\out\\production\\assignment5\\
-
-        File file = new File(".\\out\\production\\assignment5\\" + myPackage);
+        
+        
+        
+        // fill MenuButtons with MenuItem for each included Critter
+        File file = new File("./bin/" + myPackage); // Varun's path: ".\\out\\production\\assignment5\\"
         String[] critterClasses = file.list();
         for (String s : critterClasses) {
         	try {
@@ -180,27 +169,21 @@ public class Main extends Application {
 					
 				}
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
 			}
         }
-
-       // critterMenu.setText(critterMenu.getItems().get(0).getText());
-        //stats.setText(stats.getItems().get(0).getText());
-
-
-
-		final ArrayList<Integer> num = new ArrayList<>();
-		num.add(0);
-
-
-
         
+        
+
+		final ArrayList<Integer> num = new ArrayList<>(); // memory space used to transfer info between threads
+		num.add(0);
         
         updateView(grid);
         primaryStage.show();
-
-
+        
+        
+        
+        // make Critters
         makeBtn.setOnAction(event -> {
             String critterToMake = critterMenu.getItems().get(0).getText();
             if(!critterMenu.getText().equals("Critter to Make")) {
@@ -226,7 +209,8 @@ public class Main extends Application {
             }
 
         });
-
+        
+        // display stats for a given Critter
         statsButton.setOnAction(event -> {
             String critterToStats = stats.getItems().get(0).getText();
             if(!stats.getText().equals("Critter to Stats")) {
@@ -243,16 +227,14 @@ public class Main extends Application {
             }
 
         });
-
-
-
-
-
+        
+        // perform 1 step and update display
         step1.setOnAction(event -> {
             Critter.worldTimeStep();
             updateView(grid);
         });
-
+        
+        // perform 10 steps and update display; if animation speed greater than zero, perform animation
         step10.setOnAction(event -> {
 			int animSpeed = 0;
 			if (animTF.getText() != null) {
@@ -328,7 +310,8 @@ public class Main extends Application {
 
 			}
         });
-
+        
+        // perform 100 steps and update display; if animation speed greater than zero, perform animation
         step100.setOnAction(event -> {
 			int animSpeed = 0;
 			if (animTF.getText() != null) {
@@ -406,7 +389,7 @@ public class Main extends Application {
         });
 
 
-
+        // perform 1000 steps and update display; if animation speed greater than zero, perform animation
         step1000.setOnAction(event -> {
         	int animSpeed = 0;
         	if (animTF.getText() != null) {
@@ -482,7 +465,7 @@ public class Main extends Application {
 
         });
         
-        
+        // set seed
         seedBtn.setOnAction(event -> {
         	if (seedTF.getText() != null) {
         		try {
@@ -494,15 +477,21 @@ public class Main extends Application {
         	}
         });
         
-
+        // terminate application
         quit.setOnAction(event -> {
             System.exit(0);
         });
 
     }
-
-
     
+    
+    
+    // Private Helper Methods
+    
+    /**
+     * This method updates the display of the world on the given GridPane.
+     * @param grid is the GridPane
+     */
     private void updateView(GridPane grid) {
     	grid.getChildren().clear();
     	drawGridLines(grid);
@@ -516,6 +505,10 @@ public class Main extends Application {
 		}
     }
     
+    /**
+     * This method draws grid lines on the given GridPane.
+     * @param grid is the GridPane
+     */
     private void drawGridLines(GridPane grid) {
 		for (int row = 0; row < numRows; row++) {
 			for (int col = 0; col < numColumns; col++) {
@@ -527,6 +520,11 @@ public class Main extends Application {
 		}
 	}
     
+    /**
+     * This method returns a Shape that corresponds to the given CritterShape.
+     * @param shape is the CritterShape indicating what Shape to make
+     * @return Shape corresponding to given CritterShape
+     */
     private Shape getShape(Critter.CritterShape shape) {
     	switch (shape) {
     		case CIRCLE:
@@ -555,11 +553,11 @@ public class Main extends Application {
     			star.getPoints().addAll(new Double[] {
     					size/2.0, 2.0,
     					size/1.7, size/3.0,
-    					size - 2.0, size/3.0,
+    					size/1.2, size/3.0,
     					size/1.5, size*0.67,
-    					size - 3.0, size - 3.0,
+    					size/1.3, size/1.2,
     					size/2.0, size*0.75,
-    					1.0, size - 1.0,
+    					1.0, size/1.2,
     					size*0.22, size*0.67,
     					1.0, size/3.0,
     					size*0.31, size/3.0,
@@ -569,11 +567,4 @@ public class Main extends Application {
     			return new Circle(size/2.0);
     	}
     }
-
-
-    /**
-     * Main method.
-     * @param args args can be empty. If not empty, provide two parameters -- the first is a file name, 
-     * and the second is test (for test output, where all output to be directed to a String), or nothing.
-     */
 }
